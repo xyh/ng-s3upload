@@ -36,6 +36,10 @@ angular.module('ngS3upload.directives', []).
               enableValidation: true
             }, opts);
             var bucket = scope.$eval(attrs.bucket);
+            var fileData = null;
+            if (attrs.fileData) {
+              fileData = scope.$eval(attrs.fileData);
+            }
 
             // Bind the button click event
             var button = angular.element(element.children()[0]),
@@ -73,6 +77,7 @@ angular.module('ngS3upload.directives', []).
                       selectedFile
                     ).then(function () {
                       ngModel.$setViewValue(s3Uri + key);
+                      fileData.name = filename;
                       scope.filename = ngModel.$viewValue;
 
                       if (opts.enableValidation) {
@@ -103,11 +108,7 @@ angular.module('ngS3upload.directives', []).
         };
       },
       template: '<div class="upload-wrap">' +
-        '<button class="btn btn-primary" type="button"><span ng-if="!filename">Choose file</span><span ng-if="filename">Replace file</span></button>' +
-        '<a ng-href="{{ filename  }}" target="_blank" class="" ng-if="filename" > Stored file </a>' +
-        '<div class="progress progress-striped" ng-class="{active: uploading}" ng-show="attempt" style="margin-top: 10px">' +
-        '<div class="bar" style="width: {{ progress }}%;" ng-class="barClass()"></div>' +
-        '</div>' +
+        '<button class="btn btn-primary" type="button"><span>选择文件</span></button>' +
         '<input type="file" style="display: none"/>' +
         '</div>'
     };
