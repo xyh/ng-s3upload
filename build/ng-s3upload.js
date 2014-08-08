@@ -239,7 +239,7 @@ angular.module('ngS3upload.directives', []).
         };
       },
       template: '<div class="upload-wrap">' +
-        '<button class="btn btn-primary" type="button"><span>选择文件</span></button>' +
+        '<button class="btn btn-primary" type="button"><span>上传文件</span></button>' +
         '<input type="file" style="display: none"/>' +
         '</div>'
     };
