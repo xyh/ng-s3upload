@@ -3,18 +3,6 @@ angular.module('ngS3upload.services', []).
     this.uploads = 0;
     var self = this;
 
-    this.getUploadOptions = function (uri) {
-      var deferred = $q.defer();
-      $http.get(uri).
-        success(function (response, status) {
-          deferred.resolve(response);
-        }).error(function (error, status) {
-          deferred.reject(error);
-        });
-
-      return deferred.promise;
-    };
-
     this.randomString = function (length) {
       var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
       var result = '';

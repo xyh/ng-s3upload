@@ -31,18 +31,6 @@ angular.module('ngS3upload.services', []).
     this.uploads = 0;
     var self = this;
 
-    this.getUploadOptions = function (uri) {
-      var deferred = $q.defer();
-      $http.get(uri).
-        success(function (response, status) {
-          deferred.resolve(response);
-        }).error(function (error, status) {
-          deferred.reject(error);
-        });
-
-      return deferred.promise;
-    };
-
     this.randomString = function (length) {
       var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
       var result = '';
@@ -163,19 +151,22 @@ angular.module('ngS3upload.directives', []).
             if (angular.isUndefined($attr.bucket)) {
               throw Error('bucket is a mandatory attribute');
             }
+            if (angular.isUndefined($attr.getUploadOptions)) {
+              throw Error('getUploadOptions is a mandatory attribute');
+            }
           },
           post: function (scope, element, attrs, ngModel) {
             // Build the opts array
             var opts = angular.extend({}, scope.$eval(attrs.s3UploadOptions || attrs.options));
             opts = angular.extend({
               submitOnChange: true,
-              getOptionsUri: '/getS3Options',
               acl: 'public-read',
               uploadingKey: 'uploading',
               folder: '',
               enableValidation: true
             }, opts);
             var bucket = scope.$eval(attrs.bucket);
+            var getUploadOptions = scope.$eval(attrs.getUploadOptions);
             var fileData = null;
             if (attrs.fileData) {
               fileData = scope.$eval(attrs.fileData);
@@ -199,7 +190,7 @@ angular.module('ngS3upload.directives', []).
               var ext = filename.split('.').pop();
 
               scope.$apply(function () {
-                S3Uploader.getUploadOptions(opts.getOptionsUri).then(function (s3Options) {
+                getUploadOptions().then(function (s3Options) {
                   if (opts.enableValidation) {
                     ngModel.$setValidity('uploading', false);
                   }
@@ -220,6 +211,7 @@ angular.module('ngS3upload.directives', []).
                       fileData.name = filename;
                       fileData.size = selectedFile.size;
                       fileData.type = selectedFile.type;
+                      fileData.key = key;
                       scope.filename = ngModel.$viewValue;
 
                       if (opts.enableValidation) {
@@ -250,7 +242,7 @@ angular.module('ngS3upload.directives', []).
         };
       },
       template: '<div class="upload-wrap">' +
-        '<button class="btn btn-primary" type="button"><span>选择文件</span></button>' +
+        '<button class="btn btn-primary" type="button"><span>上传文件</span></button>' +
         '<input type="file" style="display: none"/>' +
         '</div>'
     };
